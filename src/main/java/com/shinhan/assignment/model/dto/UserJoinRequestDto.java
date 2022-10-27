@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
-public class MemberJoinRequestDto {
+public class UserJoinRequestDto {
     @NotBlank(message = "필수입력값")
     @Pattern(regexp = "^[a-zA-Zㄱ-ㅎ가-힣]{1,10}$", message = "한글/영문 10자리")
     private String nickName;

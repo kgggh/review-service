@@ -1,6 +1,8 @@
 package com.shinhan.assignment.service;
 
-import com.shinhan.assignment.model.dto.MemberJoinRequestDto;
+import com.shinhan.assignment.model.dto.UserJoinRequestDto;
+import com.shinhan.assignment.model.entity.User;
+import com.shinhan.assignment.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,47 +11,72 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceTest {
-    @Autowired
-    private UserService userService;
+    @Autowired private UserService userService;
+    @Autowired private UserRepository userRepository;
 
     @Test
     void 사용자등록_성공() {
         //given
-        MemberJoinRequestDto member = new MemberJoinRequestDto();
+        UserJoinRequestDto member = new UserJoinRequestDto();
         member.setNickName("aA가입성공ㅎ");
         member.setThumbnailURL("http:localhost:8282/프로필.png");
 
         //when
         Long memberId = userService.join(member);
+        long count = userRepository.count();
 
         //then
         assertEquals(memberId, 1L);
+        assertEquals(count, 1);
+    }
+
+    @Test
+    void 사용자등록시_중복된_닉네임_등록못함() {
+        //given
+        String duplicateNickName = "중복닉네임";
+        String thumbnailURL = "http:localhost:8282/프로필.png";
+        userRepository.save(User.createUser(duplicateNickName, thumbnailURL));
+
+        UserJoinRequestDto joinUser = new UserJoinRequestDto();
+        joinUser.setNickName(duplicateNickName);
+        joinUser.setThumbnailURL(thumbnailURL);
+
+        //when
+        Exception ex1 = assertThrows(Exception.class, () -> {
+            userService.join(joinUser);
+        });
+
+        long count = userRepository.count();
+
+        //then
+        assertEquals(count, 1);
+
     }
 
     @Test
     void 사용자등록시_인적정보_유효성_검사_실패_닉네임() {
         //given
         String url = "http:localhost:8282/프로필.png";
-        MemberJoinRequestDto memOne = makeMember("", url);
-        MemberJoinRequestDto memTwo = makeMember(" ", url);
-        MemberJoinRequestDto memThird = makeMember(null, url);
-        MemberJoinRequestDto memFour = makeMember("1~숫자+특수+a", url);
+        UserJoinRequestDto userOne = makeMember("", url);
+        UserJoinRequestDto userTwo = makeMember(" ", url);
+        UserJoinRequestDto userThird = makeMember(null, url);
+        UserJoinRequestDto userFour = makeMember("1~숫자+특수+a", url);
 
         //when
         Exception ex1 = assertThrows(Exception.class, () -> {
-            userService.join(memOne);
+            userService.join(userOne);
         });
 
         Exception ex2 = assertThrows(Exception.class, () -> {
-            userService.join(memTwo);
+            userService.join(userTwo);
         });
 
         Exception ex3 = assertThrows(Exception.class, () -> {
-            userService.join(memThird);
+            userService.join(userThird);
         });
 
         Exception ex4 = assertThrows(Exception.class, () -> {
-            userService.join(memFour);
+            userService.join(userFour);
         });
 
         //then
@@ -68,11 +95,11 @@ class UserServiceTest {
         for (int i = 0; i <= 50; i++) {
             url.append("a");
         }
-        MemberJoinRequestDto member = makeMember(nickname, url.toString());
+        UserJoinRequestDto user = makeMember(nickname, url.toString());
 
         //when
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.join(member);
+            userService.join(user);
         });
 
         //then
@@ -80,8 +107,8 @@ class UserServiceTest {
         assertEquals(url.length(), 51);
     }
 
-    private MemberJoinRequestDto makeMember(String nickname, String url) {
-        MemberJoinRequestDto member = new MemberJoinRequestDto();
+    private UserJoinRequestDto makeMember(String nickname, String url) {
+        UserJoinRequestDto member = new UserJoinRequestDto();
         member.setNickName(nickname);
         member.setThumbnailURL(url);
         return member;

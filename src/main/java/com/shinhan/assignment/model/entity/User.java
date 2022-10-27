@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,9 +18,21 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(length = 10, nullable = false)
+    @Pattern(regexp = "^[a-zA-Zㄱ-ㅎ가-힣]{1,10}$", message = "한글/영문 10자리")
+    @Column(length = 10, nullable = false, unique = true)
     private String nickName;
 
+    @Size(max = 50, message = "최대 50자리")
     @Column(length = 50)
     private String thumbnailURL;
+
+    private User(String nickName, String thumbnailURL) {
+        this.nickName = nickName;
+        this.thumbnailURL = thumbnailURL;
+    }
+
+    public static User createUser(String nickName, String thumbnailURL) {
+        return new User(nickName, thumbnailURL);
+    }
+
 }
