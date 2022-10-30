@@ -24,15 +24,14 @@ public class User {
 
     @Size(max = 50, message = "최대 50자리")
     @Column(length = 50)
-    private String thumbnailURL;
+    private String thumbnailUrl;
 
-    private User(String nickName, String thumbnailURL) {
+    private User(String nickName, String thumbnailUrl) {
         this.nickName = nickName;
-        this.thumbnailURL = thumbnailURL;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public static User createUser(String nickName, String thumbnailURL) {
         return new User(nickName, thumbnailURL);
     }
-
 }

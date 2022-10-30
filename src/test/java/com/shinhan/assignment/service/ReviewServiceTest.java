@@ -1,14 +1,19 @@
 package com.shinhan.assignment.service;
 
 import com.shinhan.assignment.model.dto.ReviewModifyRequestDto;
+import com.shinhan.assignment.model.dto.ReviewReactionRequestDto;
+import com.shinhan.assignment.model.dto.ReviewSearchRequestDto;
 import com.shinhan.assignment.model.dto.ReviewWriteRequestDto;
 import com.shinhan.assignment.model.entity.*;
 import com.shinhan.assignment.repository.LectureRepository;
 import com.shinhan.assignment.repository.ReviewRepository;
 import com.shinhan.assignment.repository.UserRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
@@ -16,12 +21,14 @@ import javax.validation.ConstraintViolationException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Transactional
 class ReviewServiceTest {
     @Autowired ReviewService reviewService;
     @Autowired ReviewRepository reviewRepository;
     @Autowired UserRepository userRepository;
     @Autowired LectureRepository lectureRepository;
+    @Autowired ReviewReactionService reviewReactionService;
 
     @Test
     void 리뷰작성() {
@@ -258,59 +265,83 @@ class ReviewServiceTest {
         assertNotNull(exception);
     }
 
-    @Test
-    void 리뷰_전체조회() {
-        //given
+    private void makeDummy() {
+        int grade = 1;
+        for (int i = 65; i < 80; i++) {
+            String content = "제목"+Character.toString(i);
+            if(grade == 6) {
+                grade = 1;
+            }
+            User user =
+                    userRepository.save(User.createUser("사용"+Character.toString(i),
+                            "localhost:8888/profile"));
+            Lecture lecture = lectureRepository.save(
+                    Lecture.createLecture("스프링강의"+Character.toString(i),"김아무개",
+                            Difficulty.BEGINNER, CoursedDeadline.LIMITLESS)
+            );
+            Review review = Review.createReview(content, grade, user, lecture);
+            reviewRepository.save(review);
+            grade++;
+        }
 
+        for (int i = 1; i < 10; i++) {
+            ReviewReactionRequestDto reviewReactionRequestDto = new ReviewReactionRequestDto();
+            reviewReactionRequestDto.setReviewId((long)i);
+            reviewReactionRequestDto.setUserId((long)i);
+            reviewReactionService.reaction(reviewReactionRequestDto);
+        }
 
-        //when
-
-
-        //then
+        for (int i = 1; i < 10; i++) {
+            ReviewReactionRequestDto reviewReactionRequestDto = new ReviewReactionRequestDto();
+            reviewReactionRequestDto.setReviewId((long)i);
+            reviewReactionRequestDto.setUserId((long)i);
+            reviewReactionService.reaction(reviewReactionRequestDto);
+        }
     }
 
+    @Disabled
     @Test
     void 리뷰_전체조회시_정렬할_파라미터가없으면_좋아요_개수가_많은순으로_정렬된다() {
         //given
-
+        makeDummy();
+        ReviewSearchRequestDto searchRequestDto = new ReviewSearchRequestDto();
 
         //when
-
+        Page<Review> result = reviewRepository.findAll(searchRequestDto);
 
         //then
+        assertTrue(result.getContent().get(0).getTotalRecommended() > result.getContent().get(1).getTotalRecommended() );
+        assertTrue(result.getContent().get(0).getTotalRecommended() > result.getContent().get(2).getTotalRecommended() );
+        assertTrue(result.getContent().get(0).getTotalRecommended() > result.getContent().get(3).getTotalRecommended() );
+
     }
 
     @Test
-    void 리뷰_전체조회시_작성일자가_최신순으로_정렬된다() {
+    void 리뷰_전체조회시_높은평점순으로_정렬된다() {
         //given
-
+        makeDummy();
+        ReviewSearchRequestDto searchRequestDto = new ReviewSearchRequestDto();
+        searchRequestDto.setSort("grade,DESC");
 
         //when
-
+        Page<Review> result = reviewRepository.findAll(searchRequestDto);
 
         //then
+        assertEquals(result.getContent().get(0).getGrade(), 5);
     }
 
     @Test
-    void 리뷰_전체조회시_작성일자가_높은평점순으로_정렬된다() {
+    void 리뷰_전체조회시_낮은평점순으로_정렬된다() {
         //given
-
+        makeDummy();
+        ReviewSearchRequestDto searchRequestDto = new ReviewSearchRequestDto();
+        searchRequestDto.setSort("grade,ASC");
 
         //when
-
-
-        //then
-    }
-
-    @Test
-    void 리뷰_전체조회시_작성일자가_낮은평점순으로_정렬된다() {
-        //given
-
-
-        //when
-
+        Page<Review> result = reviewRepository.findAll(searchRequestDto);
 
         //then
+        assertEquals(result.getContent().get(0).getGrade(), 1);
     }
 
     private Review makeReview() {

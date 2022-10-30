@@ -1,13 +1,18 @@
 package com.shinhan.assignment.repository;
 
+import com.shinhan.assignment.config.QueryDslConfig;
 import com.shinhan.assignment.model.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(QueryDslConfig.class)
 class UserRepositoryTest {
     @Autowired private UserRepository userRepository;
 
@@ -37,14 +42,11 @@ class UserRepositoryTest {
             userRepository.save(userFour);
         });
 
-        System.out.println(ex4.getMessage());
-
         //then
         assertNotNull(ex1);
         assertNotNull(ex2);
         assertNotNull(ex3);
         assertNotNull(ex4);
-
     }
 
     private User makeUser(String nickname, String url) {

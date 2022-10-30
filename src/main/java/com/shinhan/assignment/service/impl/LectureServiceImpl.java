@@ -9,6 +9,7 @@ import com.shinhan.assignment.service.LectureNotExistsException;
 import com.shinhan.assignment.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -18,15 +19,19 @@ import javax.annotation.PostConstruct;
 @Service
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;
+    @Value("${dummy-data.enable}")
+    private boolean enableDummyData = false;
 
     @PostConstruct
     void init() {
-        String title = "스프링 부트와 JPA로 초간단 API 개발하기";
-        String instructorName = "신한큐브온";
-        Difficulty difficulty = Difficulty.BEGINNER;
-        CoursedDeadline coursedDeadline = CoursedDeadline.LIMITLESS;
-        Lecture lecture = Lecture.createLecture(title, instructorName, difficulty, coursedDeadline);
-        lectureRepository.save(lecture);
+        if(enableDummyData) {
+            String title = "스프링 부트와 JPA로 초간단 API 개발하기";
+            String instructorName = "신한큐브온";
+            Difficulty difficulty = Difficulty.BEGINNER;
+            CoursedDeadline coursedDeadline = CoursedDeadline.LIMITLESS;
+            Lecture lecture = Lecture.createLecture(title, instructorName, difficulty, coursedDeadline);
+            lectureRepository.save(lecture);
+        }
     }
 
     @Override

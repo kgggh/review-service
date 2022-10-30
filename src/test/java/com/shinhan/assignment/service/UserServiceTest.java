@@ -6,10 +6,12 @@ import com.shinhan.assignment.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class UserServiceTest {
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
@@ -23,7 +25,6 @@ class UserServiceTest {
 
         //when
         Long memberId = userService.join(member);
-        long count = userRepository.count();
 
         //then
         assertEquals(memberId, userRepository.getReferenceById(memberId).getId());
@@ -46,8 +47,6 @@ class UserServiceTest {
         });
 
         //then
-        long count = userRepository.count();
-        assertEquals(count, 1);
         assertNotNull(exception);
     }
 

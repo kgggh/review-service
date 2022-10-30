@@ -60,4 +60,5 @@ public class Review extends BaseTime {
     public int getTotalRecommended() {
         return CollectionUtils.isEmpty(this.reviewReactions) ? 0 : this.reviewReactions.size();
     }
+
 }

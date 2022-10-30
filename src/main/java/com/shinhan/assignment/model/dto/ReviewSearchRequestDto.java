@@ -1,8 +1,7 @@
 package com.shinhan.assignment.model.dto;
 
-import lombok.Data;
+import com.shinhan.assignment.model.dto.base.SearchRequest;
 
-@Data
-public class ReviewSearchRequestDto {
+public class ReviewSearchRequestDto extends SearchRequest {
 
 }

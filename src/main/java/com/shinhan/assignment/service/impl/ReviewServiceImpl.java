@@ -63,6 +63,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Page<Review> searchReview(ReviewSearchRequestDto reviewSearchRequestDto) {
-        return null;
+        return reviewRepository.findAll(reviewSearchRequestDto);
     }
 }
