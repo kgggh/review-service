@@ -9,6 +9,7 @@ import com.shinhan.assignment.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public Long join(UserJoinRequestDto userJoinRequestDto) {
         log.info(String.format("[USER JOIN] user-info=%s", userJoinRequestDto.toString()));
@@ -24,12 +26,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user).getId();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new UserNotExistsException(String.format("No such id %d user found ", userId)));
     }
 
+    @Transactional(readOnly = true)
     private void validateDuplicateNickName(String nickName) {
         boolean isDuplicateNickName = userRepository.existsByNickName(nickName);
         if(isDuplicateNickName) {

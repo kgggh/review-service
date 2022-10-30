@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRepositoryTest {
     @Autowired private UserRepository userRepository;
 
-
     @Test
     void 사용자_엔티티_유효성검사_실패() {
         //given

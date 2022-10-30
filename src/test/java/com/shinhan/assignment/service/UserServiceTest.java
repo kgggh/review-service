@@ -26,8 +26,7 @@ class UserServiceTest {
         long count = userRepository.count();
 
         //then
-        assertEquals(memberId, 1L);
-        assertEquals(count, 1);
+        assertEquals(memberId, userRepository.getReferenceById(memberId).getId());
     }
 
     @Test
@@ -42,15 +41,14 @@ class UserServiceTest {
         joinUser.setThumbnailURL(thumbnailURL);
 
         //when
-        Exception ex1 = assertThrows(Exception.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             userService.join(joinUser);
         });
 
-        long count = userRepository.count();
-
         //then
+        long count = userRepository.count();
         assertEquals(count, 1);
-
+        assertNotNull(exception);
     }
 
     @Test
