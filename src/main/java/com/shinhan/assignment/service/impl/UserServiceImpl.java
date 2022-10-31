@@ -8,14 +8,30 @@ import com.shinhan.assignment.service.UserNotExistsException;
 import com.shinhan.assignment.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
+    @Value("${dummy-data.enable}")
+    private boolean enableDummyData = false;
+
+    @PostConstruct
+    void init () {
+        if(enableDummyData) {
+            UserJoinRequestDto user = new UserJoinRequestDto();
+            user.setNickName("테스터");
+            user.setThumbnailURL("http:localhost:8282/프로필.png");
+            this.join(user);
+        }
+    }
 
     @Transactional
     @Override
