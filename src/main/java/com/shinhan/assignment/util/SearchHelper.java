@@ -5,14 +5,14 @@ import com.querydsl.core.types.dsl.*;
 import com.shinhan.assignment.model.dto.base.SearchRequest;
 import org.springframework.data.domain.*;
 
-public class SearchUtil {
+public class SearchHelper {
     public static OrderSpecifier<?> sort(Path<?> parent, String sort){
-        String[] sortArr = sort.split(",");
+        String[] sortArr = sort.replaceAll("\\s", "").split(",");
         if(sortArr.length < 2) {
             return new OrderSpecifier(Order.ASC, NullExpression.DEFAULT, OrderSpecifier.NullHandling.Default);
         }
         Path<Object> fieldPath = Expressions.path(Object.class, parent, sortArr[0]);
-        return new OrderSpecifier(Order.valueOf(sortArr[1]), fieldPath);
+        return new OrderSpecifier(Order.valueOf(sortArr[1].toUpperCase()), fieldPath);
     }
 
 

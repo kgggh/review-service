@@ -33,15 +33,15 @@ class ReviewReactionServiceTest {
     void init() {
         int grade = 1;
         for (int i = 65; i < 80; i++) {
-            String content = "제목"+Character.toString(i);
+            String content = "제목" + Character.toString(i);
             if(grade == 6) {
                 grade = 1;
             }
             User user =
-                    userRepository.save(User.createUser("사용자"+Character.toString(i),
+                    userRepository.save(User.createUser("사용자" + Character.toString(i),
                             "localhost:8888/profile"));
             Lecture lecture = lectureRepository.save(
-                    Lecture.createLecture("스프링강의"+Character.toString(i),"김아무개",
+                    Lecture.createLecture("스프링강의" + Character.toString(i),"김아무개",
                             Difficulty.BEGINNER, CoursedDeadline.LIMITLESS)
             );
             Review review = Review.createReview(content, grade, user, lecture);
@@ -51,8 +51,8 @@ class ReviewReactionServiceTest {
 
         for (int i = 1; i < 5; i++) {
             ReviewReactionRequestDto reviewReactionRequestDto = new ReviewReactionRequestDto();
-            reviewReactionRequestDto.setReviewId((long)i);
-            reviewReactionRequestDto.setUserId((long)i);
+            reviewReactionRequestDto.setReviewId((long) i);
+            reviewReactionRequestDto.setUserId((long) i);
             reviewReactionService.reaction(reviewReactionRequestDto);
         }
     }

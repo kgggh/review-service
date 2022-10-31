@@ -1,4 +1,4 @@
-package com.shinhan.assignment.repository.custom;
+package com.shinhan.assignment.repository.custom.impl;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -8,7 +8,8 @@ import com.shinhan.assignment.model.entity.QReview;
 import com.shinhan.assignment.model.entity.QReviewReaction;
 import com.shinhan.assignment.model.entity.QUser;
 import com.shinhan.assignment.model.entity.Review;
-import com.shinhan.assignment.util.SearchUtil;
+import com.shinhan.assignment.repository.custom.ReviewCustomRepository;
+import com.shinhan.assignment.util.SearchHelper;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ReviewCustomRepositoryImpl implements ReviewCustomRepository {
                 .fetchJoin()
                 .distinct()
                 .orderBy(getOrder(reviewSearchRequestDto))
-                .offset(SearchUtil.getOffset(reviewSearchRequestDto))
+                .offset(SearchHelper.getOffset(reviewSearchRequestDto))
                 .limit(reviewSearchRequestDto.getSize())
                 .fetch();
 
@@ -44,13 +45,13 @@ public class ReviewCustomRepositoryImpl implements ReviewCustomRepository {
                 .fetchJoin()
                 .distinct();
 
-        return PageableExecutionUtils.getPage(result, SearchUtil.of(reviewSearchRequestDto), () ->count.fetch().size());
+        return PageableExecutionUtils.getPage(result, SearchHelper.of(reviewSearchRequestDto), () ->count.fetch().size());
     }
 
     private OrderSpecifier<?> getOrder(ReviewSearchRequestDto reviewSearchRequestDto) {
         if(Strings.isBlank(reviewSearchRequestDto.getSort())) {
             return review.reviewReactions.size().desc();
         }
-        return SearchUtil.sort(review, reviewSearchRequestDto.getSort());
+        return SearchHelper.sort(review._super, reviewSearchRequestDto.getSort());
     }
 }

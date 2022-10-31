@@ -31,7 +31,9 @@ public class ReviewReactionServiceImpl implements ReviewReactionService {
         ReviewReaction reviewReaction = ReviewReaction.createReviewReaction(user, review);
 
         reviewReactionRepository.findByReviewAndUser(review, user)
-                .ifPresentOrElse(reviewReactionRepository::delete,
-                        () -> reviewReactionRepository.save(reviewReaction));
+                .ifPresentOrElse(
+                        reviewReactionRepository::delete,
+                        () -> reviewReactionRepository.save(reviewReaction)
+                );
     }
 }

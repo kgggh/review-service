@@ -1,5 +1,6 @@
 package com.shinhan.assignment.model.dto.base;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchRequest {
+    @Schema(example = "10")
     private int size = 10;
+
+    @Schema(example = "0")
     private int page = 0;
+
+    @Schema(example = "id,DESC", description = "field,SORT")
     private String sort;
 
     public int getSize() {

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -19,6 +20,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class LectureServiceImpl implements LectureService {
     private final LectureRepository lectureRepository;
+
     @Value("${dummy-data.enable}")
     private boolean enableDummyData = false;
 
@@ -39,11 +41,11 @@ public class LectureServiceImpl implements LectureService {
         return null;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Lecture getLecture(Long lectureId) {
-        return lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new LectureNotExistsException(
-                        String.format("The lecture of the corresponding id %d could not be found", lectureId))
-                );
+        return lectureRepository.findById(lectureId).orElseThrow(
+                () -> new LectureNotExistsException(
+                        String.format("The lecture of the corresponding id %d could not be found", lectureId)));
     }
 }

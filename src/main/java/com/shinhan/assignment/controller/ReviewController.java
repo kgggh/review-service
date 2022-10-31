@@ -8,6 +8,7 @@ import com.shinhan.assignment.service.ReviewReactionService;
 import com.shinhan.assignment.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class ReviewController {
     private final ReviewReactionService reviewReactionService;
 
     @GetMapping(path = "/api/v1/reviews")
-    public ResponseEntity<Object> getReview(ReviewSearchRequestDto reviewSearchRequestDto) {
+    public ResponseEntity<Object> getReview(@ParameterObject ReviewSearchRequestDto reviewSearchRequestDto) {
         Page<Review> reviews = reviewService.searchReview(reviewSearchRequestDto);
         SearchResponse<ReviewResponseDto> result = new SearchResponse<>(reviews.map(ReviewResponseDto::new));
         return ResponseEntity.ok(result);
